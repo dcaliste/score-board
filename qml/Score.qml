@@ -48,9 +48,9 @@ Page {
     ListModel {
         id: scoreModel
         Component.onCompleted: {
-            scoreModel.append({'color': "#aa222280", 'values': [{'value': 89}, {'value': 73}]})
-            scoreModel.append({'color': "transparent", 'values': [{'value': 0}, {'value': 162, 'highlighted': true}]})
-            scoreModel.append({'color': "transparent", 'values': [{'value': 24}, {'value': 138}]})
+            scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
+            scoreModel.append({'values': [{'value': 0}, {'value': 162}]})
+            scoreModel.append({'values': [{'value': 24}, {'value': 138}]})
             scoreModel.append({})
             updated()
         }
@@ -209,7 +209,12 @@ Page {
             property var values: model.values
             property int index: model.index
 
-            //color: model.color
+            Rectangle {
+                visible: model.color !== undefined
+                anchors.fill: parent
+                color: model.color
+            }
+
             Row {
                 opacity: (row.values !== undefined &&
                           (scores.edition === undefined ||

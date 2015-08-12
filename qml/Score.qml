@@ -23,7 +23,7 @@ Page {
 
     property int _nTeams: teamExample.count
     property real columnMinWidth: 0
-    property real columnMaxWidth: Theme.itemSizeLarge * 2
+    property real columnMaxWidth: Theme.itemSizeLarge * 1.5
     property real _colWidth
     Binding {
         target: page
@@ -47,10 +47,21 @@ Page {
     ListModel {
         id: scoreModel
         Component.onCompleted: {
-            scoreModel.append({'decoration': "none", 'color': "#aa222280", 'values': [{'value': 89}, {'value': 73}]})
-            scoreModel.append({'decoration': "none", 'color': "transparent", 'values': [{'value': 0}, {'value': 162, 'highlighted': true}]})
-            scoreModel.append({'decoration': "none", 'color': "transparent", 'values': [{'value': 24}, {'value': 138}]})
+            scoreModel.append({'color': "#aa222280", 'values': [{'value': 89}, {'value': 73}]})
+            scoreModel.append({'color': "transparent", 'values': [{'value': 0}, {'value': 162, 'highlighted': true}]})
+            scoreModel.append({'color': "transparent", 'values': [{'value': 24}, {'value': 138}]})
             scoreModel.append({})
+        }
+        function addRow() {
+            var scores = []
+            var i
+            for (i = 0; i < page._nTeams; i++) {
+                scores[i] = {'value': 0}
+                }
+            this.insert(this.count - 1, {'values': scores})
+        }
+        function update(row, col, value) {
+            this.get(row)['values'].get(col)['value'] = parseFloat(value)
         }
     }
 
@@ -112,6 +123,7 @@ Page {
                         text: model.value ? model.value : ""
                         inputMethodHints: Qt.ImhDigitsOnly
                         Component.onCompleted: if (model.index == 0) { forceActiveFocus() }
+                        Component.onDestruction: scoreModel.update(line.index, model.index, text)
                         EnterKey.iconSource: "image://theme/icon-m-enter-close"
                         EnterKey.onClicked: line.closed()
                     }
@@ -149,16 +161,18 @@ Page {
                 }
                 Behavior on opacity { FadeAnimation {} }
             }
-            IconButton {
+            Image {
                 opacity: (row.values === undefined &&
                           (scores.edition === undefined ||
                            scores.edition.index != model.index)) ? 1. : 0.
                 visible: opacity > 0.
                 anchors.horizontalCenter: parent.horizontalCenter
-                icon.source: "image://theme/icon-m-add"
+                source: "image://theme/icon-m-add"
                 Behavior on opacity { FadeAnimation {} }
             }
-            onClicked: {
+            onClicked: if (row.values === undefined) {
+                scores.model.addRow()
+            } else {
                 scores.stopEdition()
                 scores.edition = editor.createObject(row, {"model": values,
                                                            "index": model.index})

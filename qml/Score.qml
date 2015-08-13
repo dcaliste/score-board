@@ -79,13 +79,16 @@ Page {
         }
 
         property var summarizeFunc: sumUp
+        onSummarizeFuncChanged: if (scores.summarizeFunc !== undefined) {
+            scores.summarizeFunc()
+        }
         function sumUp() {
             var row, col
             var sum = []
             for (col = 0; col < teamModel.count; col++) {
                 sum[col] = 0.
             }
-            for (row = 0; row < model.count - 1; row++) {
+            for (row = 0; row < scoreModel.count - 1; row++) {
                 var obj = model.get(row)['values']
                 for (col = 0; col < obj.count; col++) {
                     sum[col] += obj.get(col)['value']
@@ -97,6 +100,14 @@ Page {
         }
 
         PullDownMenu {
+            MenuItem {
+                text: scores.decorationFunc === undefined ? "Highlight highest" : "No highlight"
+                onClicked: scores.decorationFunc = scores.decorationFunc === undefined ? scores.highlightHighest : scores.undefined
+            }
+            MenuItem {
+                text: scores.summarizeFunc === undefined ? "Sum up scores" : "No summarize"
+                onClicked: scores.summarizeFunc = scores.summarizeFunc === undefined ? scores.sumUp : scores.undefined
+            }
             MenuItem {
                 text: "Modify the setup"
                 onClicked: {
@@ -197,7 +208,8 @@ Page {
                 scores.edition = editor.createObject(row,
                                                      {"model": values,
                                                       "scoreModel": scoreModel,
-                                                      "colWidth": page._colWidth})
+                                                      "colWidth": page._colWidth,
+                                                      "newRow": row.values.get(0)['value'] === undefined})
                 scores.edition.closed.connect(scores.stopEdition)
             }
         }

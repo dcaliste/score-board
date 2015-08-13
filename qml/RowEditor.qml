@@ -24,12 +24,13 @@ Row {
     property real colWidth
     property var scoreModel
     property var model
+    property bool newRow
 
     signal closed()
 
     opacity: 0.
     Repeater {
-        model: line.model.count > 0 ? line.model : scoreModel.nCols
+        model: newRow ? scoreModel.nCols : line.model
         TextField {
             width: colWidth
             text: model.value ? model.value : ""
@@ -39,7 +40,7 @@ Row {
             EnterKey.iconSource: "image://theme/icon-m-enter-close"
             EnterKey.onClicked: line.closed()
         }
-        Component.onDestruction: if (line.model.count == 0) {
+        Component.onDestruction: if (line.newRow) {
             line.model = scoreModel.addRow()
         }
     }

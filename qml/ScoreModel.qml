@@ -32,10 +32,10 @@ ListModel {
         }
     }
     Component.onCompleted: {
-        //scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
-        //scoreModel.append({'values': [{'value': 0}, {'value': 162}]})
-        //scoreModel.append({'values': [{'value': 24}, {'value': 138}]})
-        scoreModel.append({'values': []})
+        /* scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
+           scoreModel.append({'values': [{'value': 0}, {'value': 162, 'highlighted': true}]})
+           scoreModel.append({'values': [{'value': 24}, {'value': 138}]}) */
+        scoreModel.append({'values': [{'value': undefined, 'highlighted': false}]})
         updated()
     }
     signal updated()

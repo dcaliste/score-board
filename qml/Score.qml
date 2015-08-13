@@ -21,10 +21,11 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
+    property var teamModel: undefined
     property real columnMinWidth: 0
     property real columnMaxWidth: Theme.itemSizeHuge
 
-    property int _nTeams: teamModel.count
+    property int _nTeams: teamModel !== undefined ? teamModel.count : 1
     property real _colWidth
     Binding {
         target: page
@@ -32,22 +33,6 @@ Page {
         value: Math.min(Math.max(width / _nTeams, columnMinWidth), columnMaxWidth)
     }
 
-    anchors.fill: parent
-
-    ListModel {
-        id: teamModel
-        ListElement {
-            label: "MP"
-            score: 0
-        }
-        ListElement {
-            label: "TND"
-            score: 0
-        }
-        function setSummary(col, value) {
-            this.get(col)['score'] = value
-        }
-    }
     ScoreModel {
         id: scoreModel
         nCols: page._nTeams
@@ -129,7 +114,7 @@ Page {
                             
                             Label {
                                 anchors.centerIn: parent
-                                text: model.label
+                                text: model.label.length > 0 ? model.label : "Player " + (model.index + 1)
                                 font.family: Theme.fontFamilyHeading
                                 truncationMode: TruncationMode.Fade
                                 color: Theme.highlightColor
@@ -196,6 +181,7 @@ Page {
                 scores.edition.closed.connect(scores.stopEdition)
             }
         }
+        VerticalScrollDecorator { flickable: scores }
     }
     OpacityRampEffect {
         enabled: toolbar.visible

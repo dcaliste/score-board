@@ -11,14 +11,7 @@ ApplicationWindow {
         Button {
             anchors.centerIn: parent
             text: "Start a new game"
-            onClicked: {
-                var setup = pageStack.push("GameSetup.qml", {"model": teamModel})
-                setup.accepted.connect(function() { pageStack.replace("Score.qml", {"teamModel": teamModel}) })
-            }
+            onClicked: pageStack.push("Score.qml")
         }
-    }
-
-    TeamModel {
-        id: teamModel
     }
 }

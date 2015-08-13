@@ -40,7 +40,7 @@ ListItem {
 
     Row {
         anchors.verticalCenter: parent.verticalCenter
-        opacity: (row.values !== undefined && !row.editing) ? 1. : 0.
+        opacity: (row.values.count > 0 && !row.editing) ? 1. : 0.
         visible: opacity > 0.
         Repeater {
             model: row.values
@@ -71,7 +71,7 @@ ListItem {
     }
     Image {
         anchors.top: parent.top
-        opacity: (row.values === undefined && !row.editing) ? 1. : 0.
+        opacity: (row.values.count == 0 && !row.editing) ? 1. : 0.
         visible: opacity > 0.
         anchors.horizontalCenter: parent.horizontalCenter
         source: "image://theme/icon-m-add"

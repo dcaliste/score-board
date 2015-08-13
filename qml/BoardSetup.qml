@@ -69,11 +69,6 @@ Page {
                     EnterKey.onClicked: focus = false
                 }
             }
-            Button {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: "Start"
-                onClicked: accepted()
-            }
         }
         VerticalScrollDecorator { flickable: flickable }
     }

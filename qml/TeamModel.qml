@@ -20,12 +20,17 @@ import Sailfish.Silica 1.0
 
 ListModel {
     // Two teams by default
-    Component.onCompleted: setNTeams(2)
+    ListElement {
+        label: ""
+        score: 0
+    }
+    ListElement {
+        label: ""
+        score: 0
+    }
     function setNTeams(n) {
+        if (n < this.count) this.remove(n, this.count - n)
         var i
-        for (i = this.count - 1; i >= n ; i--) {
-            this.remove(i)
-        }
         for (i = this.count; i < n; i++) {
             this.append({'label': "", 'score': 0})
         }

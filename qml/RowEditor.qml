@@ -29,7 +29,7 @@ Row {
 
     opacity: 0.
     Repeater {
-        model: line.model ? line.model : scoreModel.nCols
+        model: line.model.count > 0 ? line.model : scoreModel.nCols
         TextField {
             width: colWidth
             text: model.value ? model.value : ""
@@ -39,7 +39,7 @@ Row {
             EnterKey.iconSource: "image://theme/icon-m-enter-close"
             EnterKey.onClicked: line.closed()
         }
-        Component.onDestruction: if (line.model === undefined) {
+        Component.onDestruction: if (line.model.count == 0) {
             line.model = scoreModel.addRow()
         }
     }

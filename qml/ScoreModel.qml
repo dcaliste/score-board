@@ -20,16 +20,31 @@ import Sailfish.Silica 1.0
 
 ListModel {
     property int nCols
+    onNColsChanged: {
+        var row, col
+        for (row = 0; row < this.count - 1; row++) {
+            // Adjust the number of column to exactly nCols
+            var obj = this.get(row)['values']
+            if (nCols < obj.count) obj.remove(nCols, obj.count - nCols)
+            for (col = obj.count; col < nCols; col++) {
+                obj.append({'value': 0})
+            }
+        }
+    }
     Component.onCompleted: {
-        scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
-        scoreModel.append({'values': [{'value': 0}, {'value': 162}]})
-        scoreModel.append({'values': [{'value': 24}, {'value': 138}]})
-        scoreModel.append({})
+        //scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
+        //scoreModel.append({'values': [{'value': 0}, {'value': 162}]})
+        //scoreModel.append({'values': [{'value': 24}, {'value': 138}]})
+        scoreModel.append({'values': []})
         updated()
     }
     signal updated()
     function removeAt(row) {
         this.remove(row['index'])
+        updated()
+    }
+    function clearAll() {
+        this.remove(0, this.count - 1)
         updated()
     }
     function addRow() {

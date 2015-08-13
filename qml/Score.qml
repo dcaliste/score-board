@@ -21,11 +21,11 @@ import Sailfish.Silica 1.0
 Page {
     id: page
 
-    property var teamModel: undefined
     property real columnMinWidth: 0
     property real columnMaxWidth: Theme.itemSizeHuge
 
-    property int _nTeams: teamModel !== undefined ? teamModel.count : 1
+    property var _setup: undefined
+    property int _nTeams: teamModel.count
     property real _colWidth
     Binding {
         target: page
@@ -33,9 +33,12 @@ Page {
         value: Math.min(Math.max(width / _nTeams, columnMinWidth), columnMaxWidth)
     }
 
+    TeamModel {
+        id: teamModel
+    }
     ScoreModel {
         id: scoreModel
-        nCols: page._nTeams
+        nCols: teamModel.count
     }
 
     SilicaListView {
@@ -90,6 +93,23 @@ Page {
             }
             for (col = 0; col < teamModel.count; col++) {
                 teamModel.setSummary(col, sum[col])
+            }
+        }
+
+        PullDownMenu {
+            MenuItem {
+                text: "Modify the setup"
+                onClicked: {
+                    if (_setup === undefined) {
+                        _setup = pageStack.pushAttached("GameSetup.qml",
+                                                        {'model': teamModel})
+                    }
+                    pageStack.navigateForward()
+                }
+            }
+            MenuItem {
+                text: "Restart this board"
+                onClicked: scoreModel.clearAll()
             }
         }
 

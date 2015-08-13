@@ -44,37 +44,13 @@ Page {
             label: "TND"
             score: 0
         }
+        function setSummary(col, value) {
+            this.get(col)['score'] = value
+        }
     }
-    ListModel {
+    ScoreModel {
         id: scoreModel
-        Component.onCompleted: {
-            scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
-            scoreModel.append({'values': [{'value': 0}, {'value': 162}]})
-            scoreModel.append({'values': [{'value': 24}, {'value': 138}]})
-            scoreModel.append({})
-            updated()
-        }
-        signal updated()
-        function removeAt(row) {
-            this.remove(row['index'])
-            updated()
-        }
-        function addRow() {
-            var scores = []
-            var i
-            for (i = 0; i < page._nTeams; i++) {
-                scores[i] = {'value': 0}
-            }
-            this.insert(this.count - 1, {'values': scores})
-            return this.get(this.count - 2)['values']
-        }
-        function update(row, col, value) {
-            var fval = value.length > 0 ? parseFloat(value) : 0.
-            if (fval != row.get(col)['value']) {
-                row.get(col)['value'] = fval
-                updated()
-            }
-        }
+        nCols: page._nTeams
     }
 
     SilicaListView {
@@ -128,7 +104,7 @@ Page {
                 }
             }
             for (col = 0; col < teamModel.count; col++) {
-                teamModel.get(col)['score'] = sum[col]
+                teamModel.setSummary(col, sum[col])
             }
         }
 
@@ -185,40 +161,22 @@ Page {
         }
         Component {
             id: editor
-            Row {
-                id: line
-                property var model
-                signal closed()
-                opacity: 0.
-                Repeater {
-                    model: line.model ? line.model : page._nTeams
-                    TextField {
-                        width: page._colWidth
-                        text: model.value ? model.value : ""
-                        inputMethodHints: Qt.ImhDigitsOnly
-                        Component.onCompleted: if (model.index == 0) { forceActiveFocus() }
-                        Component.onDestruction: scoreModel.update(line.model, model.index, text)
-                        EnterKey.iconSource: "image://theme/icon-m-enter-close"
-                        EnterKey.onClicked: line.closed()
-                    }
-                    Component.onDestruction: if (line.model === undefined) {
-                        line.model = scoreModel.addRow()
-                    }
-                }
-                Component.onCompleted: opacity = 1.
-                Behavior on opacity { FadeAnimation {} }
-            }
+            RowEditor { }
         }
 
-        delegate: ListItem {
+        delegate: RowItem {
             id: row
-            contentHeight: Theme.itemSizeExtraSmall
-            property var values: model.values
-            property int index: model.index
+            colWidth: page._colWidth
+            values: model.values
+            index: model.index
+            color: model.color
+            editing: (scores.edition !== undefined &&
+                      scores.edition.model === row.values)
 
             function deleteRow() {
                 if (index > model.count - 2) return
-                remorseAction("Deleting row", function() { scores.model.removeAt(model) });
+                remorseAction("Deleting row",
+                              function() { scores.model.removeAt(model) });
             }
             menu: Component {
                 ContextMenu {
@@ -228,62 +186,13 @@ Page {
                     }
                 }
             }
-            ListView.onAdd: AddAnimation { target: row; }
-            ListView.onRemove: RemoveAnimation { target: row; }
 
-            Rectangle {
-                visible: model.color !== undefined
-                anchors.fill: parent
-                color: model.color !== undefined ? model.color : "background"
-            }
-
-            Row {
-                anchors.verticalCenter: parent.verticalCenter
-                opacity: (row.values !== undefined &&
-                          (scores.edition === undefined ||
-                           scores.edition.model !== row.values)) ? 1. : 0.
-                visible: opacity > 0.
-                Repeater {
-                    model: row.values
-                    
-                    Item {
-                        width: page._colWidth
-                        height: row.height
-                        Label {
-                            anchors.right: parent.right
-                            anchors.rightMargin: 2 * Theme.paddingSmall
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: model.value
-                            color: model.highlighted ? Theme.highlightColor : Theme.primaryColor
-                        }
-                        Label {
-                            visible: model.index == 0
-                            anchors.left: parent.left
-                            anchors.leftMargin: Theme.paddingSmall
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: row.index + 1
-                            color: Theme.secondaryColor
-                            font.italic: true
-                            font.pixelSize: Theme.fontSizeSmall
-                        }
-                    }
-                }
-                Behavior on opacity { FadeAnimation {} }
-            }
-            Image {
-                anchors.top: parent.top
-                opacity: (row.values === undefined &&
-                          (scores.edition === undefined ||
-                           scores.edition.model !== row.values)) ? 1. : 0.
-                visible: opacity > 0.
-                anchors.horizontalCenter: parent.horizontalCenter
-                source: "image://theme/icon-m-add"
-                Behavior on opacity { FadeAnimation {} }
-            }
             onClicked: {
                 scores.stopEdition()
-                scores.edition = editor.createObject(row, {"model": values,
-                                                           "index": model.index})
+                scores.edition = editor.createObject(row,
+                                                     {"model": values,
+                                                      "scoreModel": scoreModel,
+                                                      "colWidth": page._colWidth})
                 scores.edition.closed.connect(scores.stopEdition)
             }
         }

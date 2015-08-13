@@ -55,18 +55,23 @@ Page {
             updated()
         }
         signal updated()
-        function update(row, col, value) {
-            if (this.get(row)['values'] === undefined) {
-                var scores = []
-                var i
-                for (i = 0; i < page._nTeams; i++) {
-                    scores[i] = {'value': 0}
-                }
-                this.insert(this.count - 1, {'values': scores})
+        function removeAt(row) {
+            this.remove(row['index'])
+            updated()
+        }
+        function addRow() {
+            var scores = []
+            var i
+            for (i = 0; i < page._nTeams; i++) {
+                scores[i] = {'value': 0}
             }
+            this.insert(this.count - 1, {'values': scores})
+            return this.get(this.count - 2)['values']
+        }
+        function update(row, col, value) {
             var fval = value.length > 0 ? parseFloat(value) : 0.
-            if (fval != this.get(row)['values'].get(col)['value']) {
-                this.get(row)['values'].get(col)['value'] = fval
+            if (fval != row.get(col)['value']) {
+                row.get(col)['value'] = fval
                 updated()
             }
         }
@@ -182,7 +187,6 @@ Page {
             id: editor
             Row {
                 id: line
-                property int index
                 property var model
                 signal closed()
                 opacity: 0.
@@ -193,9 +197,12 @@ Page {
                         text: model.value ? model.value : ""
                         inputMethodHints: Qt.ImhDigitsOnly
                         Component.onCompleted: if (model.index == 0) { forceActiveFocus() }
-                        Component.onDestruction: scoreModel.update(line.index, model.index, text)
+                        Component.onDestruction: scoreModel.update(line.model, model.index, text)
                         EnterKey.iconSource: "image://theme/icon-m-enter-close"
                         EnterKey.onClicked: line.closed()
+                    }
+                    Component.onDestruction: if (line.model === undefined) {
+                        line.model = scoreModel.addRow()
                     }
                 }
                 Component.onCompleted: opacity = 1.
@@ -209,16 +216,32 @@ Page {
             property var values: model.values
             property int index: model.index
 
+            function deleteRow() {
+                if (index > model.count - 2) return
+                remorseAction("Deleting row", function() { scores.model.removeAt(model) });
+            }
+            menu: Component {
+                ContextMenu {
+                    MenuItem {
+                        text: "Delete row"
+                        onClicked: row.deleteRow()
+                    }
+                }
+            }
+            ListView.onAdd: AddAnimation { target: row; }
+            ListView.onRemove: RemoveAnimation { target: row; }
+
             Rectangle {
                 visible: model.color !== undefined
                 anchors.fill: parent
-                color: model.color
+                color: model.color !== undefined ? model.color : "background"
             }
 
             Row {
+                anchors.verticalCenter: parent.verticalCenter
                 opacity: (row.values !== undefined &&
                           (scores.edition === undefined ||
-                           scores.edition.index != model.index)) ? 1. : 0.
+                           scores.edition.model !== row.values)) ? 1. : 0.
                 visible: opacity > 0.
                 Repeater {
                     model: row.values
@@ -248,9 +271,10 @@ Page {
                 Behavior on opacity { FadeAnimation {} }
             }
             Image {
+                anchors.top: parent.top
                 opacity: (row.values === undefined &&
                           (scores.edition === undefined ||
-                           scores.edition.index != model.index)) ? 1. : 0.
+                           scores.edition.model !== row.values)) ? 1. : 0.
                 visible: opacity > 0.
                 anchors.horizontalCenter: parent.horizontalCenter
                 source: "image://theme/icon-m-add"

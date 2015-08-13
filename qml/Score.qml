@@ -130,29 +130,9 @@ Page {
                 width: parent.width
                 title: "Score"
             }
-            Row {
-                Repeater {
-                    model: teamModel
-                    Item {
-                        width: page._colWidth
-                        height: Theme.itemSizeExtraSmall
-                        BackgroundItem {
-                            width: parent.width - 2 * Theme.paddingSmall
-                            height: parent.height
-                            anchors.centerIn: parent
-                            highlighted: true
-                            highlightedColor: Theme.secondaryHighlightColor
-                            
-                            Label {
-                                anchors.centerIn: parent
-                                text: model.label.length > 0 ? model.label : "Player " + (model.index + 1)
-                                font.family: Theme.fontFamilyHeading
-                                truncationMode: TruncationMode.Fade
-                                color: Theme.highlightColor
-                            }
-                        }
-                    }
-                }
+            RowHeader {
+                colWidth: page._colWidth
+                model: teamModel
             }
         }
 

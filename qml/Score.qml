@@ -17,9 +17,28 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "sqlite_backend.js" as Storage
 
 Page {
     id: page
+
+    property int boardId: 0
+    onBoardIdChanged: if (boardId > 0) {
+        Storage.getBoardTeams(storage, teamModel, boardId)
+        Storage.getBoardScores(storage, scoreModel, boardId)
+    }
+    property var historyEntry
+    Component.onDestruction: if (scoreModel.count > 1) {
+        var id = (boardId == 0)
+        ? Storage.newBoard(storage, teamModel, scoreModel)
+        : Storage.updateBoard(storage, teamModel, scoreModel, boardId)
+        Storage.setBoardTeams(storage, teamModel, id)
+        Storage.setBoardScores(storage, scoreModel, id)
+        Storage.setBoardHistory(storage, historyEntry, id)
+    } else {
+        if (boardId > 0) Storage.deleteBoard(storage, boardId)
+        history.remove(historyEntry.index)
+    }
 
     property real columnMinWidth: 0
     property real columnMaxWidth: Theme.itemSizeHuge
@@ -89,7 +108,7 @@ Page {
                 sum[col] = 0.
             }
             for (row = 0; row < scoreModel.count - 1; row++) {
-                var obj = model.get(row)['values']
+                var obj = scoreModel.get(row)['values']
                 for (col = 0; col < obj.count; col++) {
                     sum[col] += obj.get(col)['value']
                 }

@@ -56,6 +56,7 @@ function getBoardHistory(db, history, ordering) {
     db.transaction(function(tx) {
         createTableCategories(tx);
         createTableTeams(tx);
+        createTableScores(tx);
         createTableHistory(tx);
         var rs = tx.executeSql('SELECT History.ROWID, datetime, (SELECT GROUP_CONCAT(CASE Length(Teams.label) WHEN 0 THEN "Player" ELSE Teams.label END, ", ") FROM Teams WHERE board = History.ROWID) teams, (SELECT Count(*) FROM Scores WHERE board = History.ROWID) nScores, Categories.category FROM History LEFT JOIN Categories ON History.category = Categories.ROWID ORDER BY datetime DESC');
         if (rs.rows.length > 0)
@@ -71,6 +72,7 @@ function setBoardHistory(db, historyEntry, boardId) {
     db.transaction(function(tx) {
         createTableCategories(tx);
         createTableTeams(tx);
+        createTableScores(tx);
         createTableHistory(tx);
         var rs = tx.executeSql('SELECT History.ROWID, datetime, (SELECT GROUP_CONCAT(CASE Length(Teams.label) WHEN 0 THEN "Player" ELSE Teams.label END, ", ") FROM Teams WHERE board = History.ROWID) teams, (SELECT Count(*) FROM Scores WHERE board = History.ROWID) nScores, Categories.category FROM History LEFT JOIN Categories ON History.category = Categories.ROWID WHERE History.ROWID = ?', [boardId]);
         if (rs.rows.length > 0) {

@@ -45,6 +45,10 @@ ApplicationWindow {
             anchors.fill: parent
             PullDownMenu {
                 MenuItem {
+		    text: "About"
+		    onClicked: pageStack.push("About.qml")
+                }
+                MenuItem {
                     text: "Start a new board"
                     onClicked: newScoreBoard()
                 }

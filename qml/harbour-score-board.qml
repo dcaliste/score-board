@@ -71,7 +71,7 @@ ApplicationWindow {
             }
             delegate: ListItem {
                 id: row
-                property int rowid: model.rowid
+                property int rowid: model.rowid !== undefined ? model.rowid : 0
                 contentHeight: Theme.itemSizeSmall
                 Label {
                     anchors.left: parent.left
@@ -137,7 +137,7 @@ ApplicationWindow {
             enabled: (pageStack.depth > 1)
             CoverAction {
                 iconSource: "image://theme/icon-cover-new"
-                onTriggered: scoreBoard.addRow()
+                onTriggered: scoreBoard.scoreModel.addRow()
             }
         }
         
@@ -156,7 +156,8 @@ ApplicationWindow {
                 RowHeader {
                     model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.teamModel : undefined
                     colWidth: model !== undefined ? parent.width / model.count : 1.
-                    Component.onCompleted: console.log(model)
+                    colHeight: parent.height / 10
+                    fontSize: Theme.fontSizeSmall
                 }
             }
             

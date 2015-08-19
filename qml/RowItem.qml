@@ -52,7 +52,7 @@ ListItem {
                     anchors.right: parent.right
                     anchors.rightMargin: 2 * Theme.paddingSmall
                     anchors.verticalCenter: parent.verticalCenter
-                    text: model.value
+                    text: model.value ? model.value : "0"
                     color: model.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
                 Label {

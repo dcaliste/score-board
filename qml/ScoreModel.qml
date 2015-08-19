@@ -35,17 +35,23 @@ ListModel {
         /* scoreModel.append({'color': "#80aa2222", 'values': [{'value': 89}, {'value': 73}]})
            scoreModel.append({'values': [{'value': 0}, {'value': 162, 'highlighted': true}]})
            scoreModel.append({'values': [{'value': 24}, {'value': 138}]}) */
-        scoreModel.append({'values': [{'value': undefined, 'highlighted': false}]})
+        ensureLastRow()
         updated()
     }
     signal updated()
+    function ensureLastRow() {
+        if (this.count > 0 && this.get(this.count - 1)['values'].get(0)['value'] === undefined) return
+        scoreModel.append({'values': [{'value': undefined, 'highlighted': false}]})
+    }
     function removeAt(row) {
         this.remove(row['index'])
         updated()
     }
-    function clearAll() {
+    function clearAll(signal) {
+        ensureLastRow()
+        if (this.count == 1) return
         this.remove(0, this.count - 1)
-        updated()
+        if (signal === undefined || signal) updated()
     }
     function addRow() {
         var scores = []
@@ -53,14 +59,15 @@ ListModel {
         for (i = 0; i < nCols; i++) {
             scores[i] = {'value': 0}
         }
+        ensureLastRow()
         this.insert(this.count - 1, {'values': scores})
         return this.get(this.count - 2)['values']
     }
-    function update(row, col, value) {
+    function update(row, col, value, signal) {
         var fval = value.length > 0 ? parseFloat(value) : 0.
         if (fval != row.get(col)['value']) {
             row.get(col)['value'] = fval
-            updated()
+            if (signal === undefined || signal) updated()
         }
     }
 }

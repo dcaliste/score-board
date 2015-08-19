@@ -39,6 +39,8 @@ Page {
         if (boardId > 0) Storage.deleteBoard(storage, boardId)
         history.remove(historyEntry.index)
     }
+    property alias teamModel: teamModel
+    property alias scoreModel: scoreModel
 
     property real columnMinWidth: 0
     property real columnMaxWidth: Theme.itemSizeHuge

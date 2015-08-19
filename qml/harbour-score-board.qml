@@ -1,5 +1,5 @@
 /*
- * harbour-score.qml
+ * harbour-score-board.qml
  * Copyright (C) Damien Caliste 2015 <dcaliste@free.fr>
  *
  * freebox-o-fish is free software: you can redistribute it and/or modify it
@@ -53,6 +53,10 @@ ApplicationWindow {
                 title: "Score keeping"
             }
             model: history
+            ViewPlaceholder {
+                enabled: history.count == 0
+                text: "No stored boards"
+            }
             section {
                 property: 'section'
 

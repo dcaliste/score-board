@@ -21,13 +21,15 @@ import Sailfish.Silica 1.0
 Row {
     id: row
     property real colWidth
+    property real colHeight: Theme.itemSizeExtraSmall
+    property real fontSize: Theme.fontSizeMedium
     property var model
 
     Repeater {
         model: row.model
         Item {
             width: row.colWidth
-            height: Theme.itemSizeExtraSmall
+            height: colHeight
             BackgroundItem {
                 width: parent.width - 2 * Theme.paddingSmall
                 height: parent.height
@@ -38,6 +40,7 @@ Row {
                 Label {
                     anchors.centerIn: parent
                     text: model.label.length > 0 ? model.label : "Player " + (model.index + 1)
+                    font.pixelSize: fontSize
                     font.family: Theme.fontFamilyHeading
                     truncationMode: TruncationMode.Fade
                     color: Theme.highlightColor

@@ -22,10 +22,12 @@ ListItem {
     id: row
 
     property real colWidth
+    property alias colHeight: row.contentHeight
+    property real fontSize: Theme.fontSizeMedium
     property var values
-    property int index
+    property int index: -1
     property var color
-    property bool editing
+    property bool editing: false
 
     contentHeight: Theme.itemSizeExtraSmall
 
@@ -53,10 +55,11 @@ ListItem {
                     anchors.rightMargin: 2 * Theme.paddingSmall
                     anchors.verticalCenter: parent.verticalCenter
                     text: model.value ? model.value : "0"
+                    font.pixelSize: fontSize
                     color: model.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
                 Label {
-                    visible: model.index == 0
+                    visible: row.index >= 0 && model.index == 0
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.paddingSmall
                     anchors.verticalCenter: parent.verticalCenter

@@ -21,6 +21,7 @@ import QtQuick.LocalStorage 2.0
 import "sqlite_backend.js" as Storage
 
 ApplicationWindow {
+    id: app
     initialPage: welcome
     cover: cover
     _defaultPageOrientations: Orientation.All
@@ -129,7 +130,10 @@ ApplicationWindow {
             enabled: (pageStack.depth == 1)
             CoverAction {
                 iconSource: "image://theme/icon-cover-new"
-                onTriggered: newScoreBoard()
+                onTriggered: {
+                    app.activate()
+                    newScoreBoard()
+                }
             }
         }
         
@@ -137,39 +141,60 @@ ApplicationWindow {
             enabled: (pageStack.depth > 1)
             CoverAction {
                 iconSource: "image://theme/icon-cover-new"
-                onTriggered: scoreBoard.scoreModel.addRow()
+                onTriggered: {
+                    app.activate()
+                    scoreBoard.scoreModel.addRow()
+                }
             }
         }
         
         Item {
+            id: content
             visible: pageStack.depth > 1
-            width: parent.width - 2*Theme.paddingMedium
+            width: parent.width - 2*Theme.paddingLarge
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: Theme.paddingMedium
+            anchors.topMargin: Theme.paddingLarge + Theme.paddingSmall
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: Theme.paddingMedium
+            anchors.bottomMargin: Theme.itemSizeSmall
 
+            property real itemHeight: height / 7
+
+            RowHeader {
+                id: header
+                model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.teamModel : undefined
+                colWidth: model !== undefined ? parent.width / model.count : 1.
+                colHeight: content.itemHeight
+                fontSize: Theme.fontSizeSmall
+            }
             Item {
-                id: content
-                anchors.fill: parent
-                RowHeader {
-                    model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.teamModel : undefined
-                    colWidth: model !== undefined ? parent.width / model.count : 1.
-                    colHeight: parent.height / 10
-                    fontSize: Theme.fontSizeSmall
+                clip: true
+                y: content.itemHeight + Theme.paddingSmall
+                width: parent.width
+                height: parent.height - y
+                ListView {
+                    id: list
+                    interactive: false
+                    width: parent.width
+                    height: childrenRect.height
+                    y: Math.min(parent.height - height, 0)
+                    model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.scoreModel : undefined
+                    delegate: RowItem {
+                        colWidth: header.colWidth
+                        colHeight: content.itemHeight
+                        fontSize: Theme.fontSizeSmall
+                        values: model.values
+                        visible: model.index < list.model.count - 1
+                    }
+                }
+                OpacityRampEffect {
+                    enabled: list.y < 0
+                    slope: list.height / content.itemHeight
+                    offset: 1. - (content.itemHeight - list.y) / list.height
+                    direction: OpacityRamp.BottomToTop
+                    sourceItem: list
                 }
             }
-            
-            Label {
-                anchors.centerIn: parent
-                text: "cover " + pageStack.depth
-            }
-            /*OpacityRampEffect {
-                offset: 0.5
-                direction: OpacityRamp.TopToBottom
-                sourceItem: content
-            }*/
         }
 
     }

@@ -133,7 +133,7 @@ Page {
                 text: "Modify the setup"
                 onClicked: {
                     if (_setup === undefined) {
-                        _setup = pageStack.pushAttached("GameSetup.qml",
+                        _setup = pageStack.pushAttached("BoardSetup.qml",
                                                         {'model': teamModel})
                     }
                     pageStack.navigateForward()

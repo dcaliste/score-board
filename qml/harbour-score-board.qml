@@ -156,7 +156,7 @@ ApplicationWindow {
             anchors.top: parent.top
             anchors.topMargin: Theme.paddingLarge + Theme.paddingSmall
             anchors.bottom: parent.bottom
-            anchors.bottomMargin: Theme.itemSizeSmall
+            anchors.bottomMargin: Theme.itemSizeSmall + Theme.paddingLarge
 
             property real itemHeight: height / 7
 
@@ -176,7 +176,7 @@ ApplicationWindow {
                     id: list
                     interactive: false
                     width: parent.width
-                    height: childrenRect.height
+                    height: childrenRect.height - content.itemHeight
                     y: Math.min(parent.height - height, 0)
                     model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.scoreModel : undefined
                     delegate: RowItem {
@@ -184,7 +184,6 @@ ApplicationWindow {
                         colHeight: content.itemHeight
                         fontSize: Theme.fontSizeSmall
                         values: model.values
-                        visible: model.index < list.model.count - 1
                     }
                 }
                 OpacityRampEffect {

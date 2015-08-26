@@ -51,7 +51,7 @@ Page {
     Binding {
         target: page
         property: "_colWidth"
-        value: Math.min(Math.max(width / _nTeams, columnMinWidth), columnMaxWidth)
+        value: Math.min(Math.max(scores.width / _nTeams, columnMinWidth), columnMaxWidth)
     }
 
     TeamModel {
@@ -64,6 +64,7 @@ Page {
 
     SilicaListView {
         id: scores
+        anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: parent.height - (toolbar.visible ? toolbar.height : 0.)
         contentWidth: page._nTeams * page._colWidth

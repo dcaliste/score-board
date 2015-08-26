@@ -23,6 +23,7 @@ Row {
     property real colWidth
     property real colHeight: Theme.itemSizeExtraSmall
     property real fontSize: Theme.fontSizeMedium
+    property bool highlighted: true
     property var model
 
     Repeater {
@@ -31,14 +32,16 @@ Row {
             width: row.colWidth
             height: colHeight
             BackgroundItem {
-                width: parent.width - 2 * Theme.paddingSmall
+                width: parent.width - Theme.paddingSmall
                 height: parent.height
                 anchors.centerIn: parent
-                highlighted: true
+                highlighted: row.highlighted
                 highlightedColor: Theme.secondaryHighlightColor
                 
                 Label {
-                    anchors.centerIn: parent
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
                     text: model.label.length > 0 ? model.label : "Player " + (model.index + 1)
                     font.pixelSize: fontSize
                     font.family: Theme.fontFamilyHeading

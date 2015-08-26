@@ -239,6 +239,7 @@ ApplicationWindow {
                     y: Math.min(parent.height - height, 0)
                     model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.scoreModel : undefined
                     delegate: RowItem {
+                        visible: model.index < list.model.count - 1
                         colWidth: header.colWidth
                         colHeight: content.itemHeight
                         fontSize: Theme.fontSizeSmall

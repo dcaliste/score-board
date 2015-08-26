@@ -127,7 +127,7 @@ ApplicationWindow {
         id: cover
 
         CoverActionList {
-            enabled: (pageStack.depth == 1)
+            enabled: scoreBoard === undefined || scoreBoard === null
             CoverAction {
                 iconSource: "image://theme/icon-cover-new"
                 onTriggered: {
@@ -136,9 +136,68 @@ ApplicationWindow {
                 }
             }
         }
+
+        Item {
+            visible: scoreBoard === undefined || scoreBoard === null
+            width: parent.width - 2*Theme.paddingLarge
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            anchors.topMargin: Theme.paddingLarge + Theme.paddingSmall
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: Theme.itemSizeSmall + Theme.paddingLarge
+
+            Label {
+                id: nBoards
+                anchors.top: parent.top
+                width: parent.width
+                height: Theme.itemSizeExtraSmall
+                color: Theme.highlightColor
+                text: if (history.count == 0) {
+                    return "No stored board yet"
+                } else if (history.count == 1) {
+                    return "1 board"
+                } else {
+                    return history.count + " boards"
+                }
+            }
+
+            ListView {
+                id: listHistory
+                interactive: false
+                width: parent.width
+                height: parent.height - nBoards.height
+                y: nBoards.height
+                clip: true
+                model: history
+                delegate: ListItem {
+                    contentHeight: Theme.itemSizeExtraSmall
+                    Label {
+                        width: parent.width
+                        anchors.top: parent.top
+                        font.pixelSize: Theme.fontSizeSmall
+                        text: model.teams !== undefined ? model.teams : "undefined players"
+                        truncationMode: TruncationMode.Fade
+                    }
+                    Label {
+                        anchors.bottom: parent.bottom
+                        anchors.right: parent.right
+                        text: model.nScores + " scores"
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.secondaryColor
+                    }
+                }
+            }
+            OpacityRampEffect {
+                enabled: true
+                offset: 0.75
+                direction: OpacityRamp.TopToBottom
+                sourceItem: listHistory
+            }
+
+        }
         
         CoverActionList {
-            enabled: (pageStack.depth > 1)
+            enabled: scoreBoard !== undefined && scoreBoard !== null
             CoverAction {
                 iconSource: "image://theme/icon-cover-new"
                 onTriggered: {
@@ -150,7 +209,7 @@ ApplicationWindow {
         
         Item {
             id: content
-            visible: pageStack.depth > 1
+            visible: scoreBoard !== undefined && scoreBoard !== null
             width: parent.width - 2*Theme.paddingLarge
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
@@ -163,7 +222,7 @@ ApplicationWindow {
             RowHeader {
                 id: header
                 model: scoreBoard !== undefined && scoreBoard !== null ? scoreBoard.teamModel : undefined
-                colWidth: model !== undefined ? parent.width / model.count : 1.
+                colWidth: model !== undefined ? parent.width / Math.min(model.count, 4) : 1.
                 colHeight: content.itemHeight
                 fontSize: Theme.fontSizeSmall
             }

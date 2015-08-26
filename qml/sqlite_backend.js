@@ -31,8 +31,8 @@ function createTableCategories(tx) {
 function createTableTeams(tx) {
     // Create the database if it doesn't already exist
     tx.executeSql('CREATE TABLE IF NOT EXISTS Teams(
-                    board INT          NOT NULL,
-                    label CHAR(128)    NOT NULL)');
+                    board INT       NOT NULL,
+                    label CHAR(128) NOT NULL ON CONFLICT REPLACE DEFAULT "")');
 }
 
 function createTableHistory(tx) {
@@ -76,6 +76,7 @@ function setBoardHistory(db, historyEntry, boardId) {
         createTableHistory(tx);
         var rs = tx.executeSql('SELECT History.ROWID, datetime, (SELECT GROUP_CONCAT(CASE Length(Teams.label) WHEN 0 THEN "Player" ELSE Teams.label END, ", ") FROM Teams WHERE board = History.ROWID) teams, (SELECT Count(*) FROM Scores WHERE board = History.ROWID) nScores, Categories.category FROM History LEFT JOIN Categories ON History.category = Categories.ROWID WHERE History.ROWID = ?', [boardId]);
         if (rs.rows.length > 0) {
+            historyEntry['rowid'] = rs.rows.item(0).rowid
             historyEntry['datetime'] = rs.rows.item(0).datetime
             historyEntry['teams'] = rs.rows.item(0).teams
             historyEntry['nScores'] = rs.rows.item(0).nScores
@@ -123,7 +124,8 @@ function setBoardTeams(db, model, boardId) {
         tx.executeSql('DELETE FROM Teams WHERE board = ?', [boardId]);
         /* Insert new entries. */
         for (var i = 0; i < model.count; i++)
-            tx.executeSql('INSERT INTO Teams(board, label) VALUES (?, ?)', [boardId, model.get(i)['label']]);
+            tx.executeSql('INSERT INTO Teams(board, label) VALUES (?, ?)',
+                          [boardId, model.get(i)['label']]);
     });
 }
 function getBoardScores(db, model, boardId) {

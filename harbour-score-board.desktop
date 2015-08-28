@@ -2,6 +2,6 @@
 Type=Application
 Name=Score board
 Icon=harbour-score-board
-Exec=invoker -t silica-qt5 sailfish-qml harbour-score-board
+Exec=sailfish-qml harbour-score-board
 X-Nemo-Application-Type=silica-qt5
 Comment=Simple QML score sheet application

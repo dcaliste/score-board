@@ -73,33 +73,32 @@ ApplicationWindow {
             delegate: ListItem {
                 id: row
                 property int rowid: model.rowid !== undefined ? model.rowid : 0
-                contentHeight: Theme.itemSizeSmall
+                contentHeight: Theme.itemSizeMedium
                 Label {
                     anchors.left: parent.left
-                    anchors.leftMargin: Theme.paddingSmall
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: highlighted ? Theme.highlightColor : Theme.primaryColor
+                    anchors.leftMargin: Theme.horizontalPageMargin
+                    width: parent.width - 2 * Theme.horizontalPageMargin
+                    anchors.bottom: parent.verticalCenter
+                    color: row.highlighted ? Theme.highlightColor : Theme.primaryColor
                     text: model.teams ? model.teams : "Undefined players"
+                    font.pixelSize: Theme.fontSizeMedium
                     truncationMode: TruncationMode.Fade
-                    width: parent.width - 2 * Theme.paddingSmall
                 }
-                Column {
-                    id: column
-                    property var color: highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
-                    anchors.bottom: parent.bottom
+                Label {
+                    anchors.left: parent.left
+                    anchors.leftMargin: Theme.horizontalPageMargin
+                    anchors.top: parent.verticalCenter
+                    text: model.nScores + " scores"
+                    font.pixelSize: Theme.fontSizeExtraSmall
+                    color: row.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                }
+                Label {
+                    anchors.rightMargin: Theme.horizontalPageMargin
+                    anchors.top: parent.verticalCenter
                     anchors.right: parent.right
-                    anchors.rightMargin: Theme.paddingSmall
-                    Label {
-                        anchors.right: parent.right
-                        color: column.color
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        text: model.nScores + " scores"
-                    }
-                    Label {
-                        color: column.color
-                        font.pixelSize: Theme.fontSizeExtraSmall
-                        text: Qt.formatDateTime(new Date(model.datetime * 1000), "dd/MM/yyyy hh:mm")
-                    }
+                    text: Qt.formatDateTime(new Date(model.datetime * 1000), "dd/MM/yyyy hh:mm")
+                    font.pixelSize: Theme.fontSizeExtraSmall;
+                    color: row.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                 }
                 onClicked: scoreBoard = pageStack.push("Score.qml",
                                                       {'boardId': model.rowid,

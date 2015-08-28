@@ -41,12 +41,17 @@ install -m 644 -p qml/TeamModel.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/Score.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/BoardSetup.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/sqlite_backend.js %{buildroot}%{_datadir}/%{name}/qml
+install -d %{buildroot}%{_datadir}/%{name}
+install -m 644 -p about-score-board.png %{buildroot}%{_datadir}/%{name}
+install -d %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/
+install -m 644 -p harbour-score-board.png %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/
 install -d %{buildroot}%{_datadir}/applications
 install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applications
 
 %files
 %defattr(-,root,root,-)
 %{_datadir}/applications
+%{_datadir}/icons
 %{_datadir}/%{name}
 
 %changelog

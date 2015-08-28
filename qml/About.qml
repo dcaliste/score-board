@@ -19,6 +19,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 
 Page {
+    id: page
+
     PageHeader {
         title: "About"
     }
@@ -29,10 +31,11 @@ Page {
 
         spacing: Theme.paddingLarge
 
-        /*Image {
-            source: Qt.resolvedUrl("../about-freebox-o-fish.png")
+        Image {
+            visible: page.orientation === Orientation.Portrait || page.orientation === Orientation.PortraitInverted
+            source: Qt.resolvedUrl("../about-score-board.png")
             anchors.horizontalCenter: parent.horizontalCenter
-        }*/
+        }
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Score board"

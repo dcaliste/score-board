@@ -1,0 +1,32 @@
+Score-board
+===========
+
+A Sailfish application to store scores from games (or not).
+
+It automatically saves previous boards, and they can be modified
+later. It allows to create boards up to ten players or teams and
+can display the summation of all scores.
+
+Roadmap
+-------
+* add categories (user editable) to sort boards.
+* add templates for games with a specific number of rows (like
+  Seven Wonders for instance) and colourise rows.
+* add a search functionality in the board history
+* ...
+
+License
+-------
+Copyright (C) Damien Caliste 2015 <dcaliste@free.fr>
+
+score-board is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License
+as published by the Free Software Foundation; version 3.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+ 
+You should have received a copy of the GNU General Public License
+along with this program; if not, see <http://www.gnu.org/licenses/>.

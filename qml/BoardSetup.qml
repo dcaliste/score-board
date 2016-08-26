@@ -22,7 +22,12 @@ Page {
     id: page
 
     property var model
+    property int index
     signal accepted()
+
+    onIndexChanged: if (players.itemAt(index)) {
+        players.itemAt(index).forceActiveFocus()
+    }
 
     SilicaFlickable {
         id: flickable
@@ -55,6 +60,7 @@ Page {
                 }
             }
             Repeater {
+                id: players
                 model: page.model
                 TextField {
                     width: Theme.itemSizeHuge * 2
@@ -64,7 +70,11 @@ Page {
                     placeholderText: "Player " + (model.index + 1)
                     label: placeholderText
                     onTextChanged: page.model.setTeamLabel(model.index, text)
-                    Component.onCompleted: text = model.label
+                    onActiveFocusChanged: if (activeFocus) page.index = model.index
+                    Component.onCompleted: {
+                        text = model.label
+                        if (page.index == model.index) forceActiveFocus()
+                    }
                     EnterKey.iconSource: "image://theme/icon-m-enter-close"
                     EnterKey.onClicked: focus = false
                 }

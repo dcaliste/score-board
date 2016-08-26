@@ -155,6 +155,16 @@ Page {
             RowHeader {
                 colWidth: page._colWidth
                 model: teamModel
+                onClicked: {
+                    if (_setup === undefined) {
+                        _setup = pageStack.pushAttached("BoardSetup.qml",
+                                                        {'model': teamModel,
+                                                         'index': index})
+                    } else {
+                        _setup.index = index
+                    }
+                    pageStack.navigateForward()
+                }
             }
         }
 

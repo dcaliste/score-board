@@ -26,17 +26,24 @@ Row {
     property bool highlighted: true
     property var model
 
+    signal clicked(int index)
+
     Repeater {
         model: row.model
         Item {
             width: row.colWidth
             height: colHeight
             BackgroundItem {
+                id: cell
                 width: parent.width - Theme.paddingSmall
                 height: parent.height
                 anchors.centerIn: parent
-                highlighted: row.highlighted
-                highlightedColor: Theme.secondaryHighlightColor
+                highlighted: down || row.highlighted
+                Binding on highlightedColor {
+                    target: cell
+                    when: row.highlighted && !cell.down
+                    value: Theme.secondaryHighlightColor
+                }
                 
                 Label {
                     anchors.verticalCenter: parent.verticalCenter
@@ -48,6 +55,7 @@ Row {
                     truncationMode: TruncationMode.Fade
                     color: Theme.highlightColor
                 }
+                onClicked: row.clicked(model.index)
             }
         }
     }

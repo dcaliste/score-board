@@ -84,6 +84,18 @@ function setBoardHistory(db, historyEntry, boardId) {
         }
     });
 }
+function getPlayerList(db) {
+    var allPlayers = [];
+
+    db.transaction(function(tx) {
+        createTableTeams(tx);
+        var rs = tx.executeSql('SELECT DISTINCT trim(label) player FROM Teams WHERE label IS NOT "" ORDER BY label ASC');
+        if (rs.rows.length > 0)
+            for (var i = 0; i < rs.rows.length; i++)
+                allPlayers.push(rs.rows.item(i).player);
+    });
+    return allPlayers;
+}
 function newBoard(db, teamModel, scoreModel) {
     var id
     db.transaction(function(tx) {

@@ -17,6 +17,7 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "sqlite_backend.js" as Storage
 
 Page {
     id: page
@@ -62,24 +63,57 @@ Page {
             Repeater {
                 id: players
                 model: page.model
-                TextField {
+                Item {
+                    id: player
+                    property alias text: textField.text
+                    height: Theme.itemSizeMedium + (favorites.parent == player ? favorites.height : 0.)
                     width: Theme.itemSizeHuge * 2
-                    height: Theme.itemSizeMedium
-                    anchors.right: column.right
-                    anchors.rightMargin: Theme.paddingLarge
-                    placeholderText: "Player " + (model.index + 1)
-                    label: placeholderText
-                    onTextChanged: page.model.setTeamLabel(model.index, text)
-                    onActiveFocusChanged: if (activeFocus) page.index = model.index
-                    Component.onCompleted: {
-                        text = model.label
-                        if (page.index == model.index) forceActiveFocus()
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    onActiveFocusChanged: if (activeFocus) {
+                        page.index = model.index
+                        textField.forceActiveFocus()
                     }
-                    EnterKey.iconSource: "image://theme/icon-m-enter-close"
-                    EnterKey.onClicked: focus = false
+                    TextField {
+                        id: textField
+                        width: parent.width
+                        placeholderText: "Player " + (model.index + 1)
+                        label: placeholderText
+                        onTextChanged: page.model.setTeamLabel(model.index, text)
+                        onActiveFocusChanged: if (activeFocus) {
+                            page.index = model.index
+                        }
+                        Component.onCompleted: {
+                            text = model.label
+                            if (page.index == model.index) forceActiveFocus()
+                        }
+                        EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                        EnterKey.onClicked: focus = false
+                    }
+                    IconButton {
+                        id: favIcon
+                        anchors.left: parent.right
+                        icon.source: "image://theme/icon-m-favorite"
+                        onClicked: favorites.show(player)
+                        visible: favorites.count > 0
+                                 && (textField.focus || favorites.parent == player)
+                    }
                 }
             }
         }
         VerticalScrollDecorator { flickable: flickable }
+    }
+
+    ContextMenu {
+        id: favorites
+        property int count: favRepeater.model !== undefined ? favRepeater.model.length : 0
+        Repeater {
+            id: favRepeater
+            model: Storage.getPlayerList(storage)
+
+            MenuItem {
+                text: modelData
+                onClicked: players.itemAt(page.index).text = text
+            }
+        }
     }
 }

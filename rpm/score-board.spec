@@ -9,7 +9,7 @@
 Name: harbour-score-board
 
 Summary: A Sailfish application to store scores from games (or not)
-Version: 1.0.0
+Version: 1.1.0
 Release: 1
 License: GPLv3
 Source: %{name}-%{version}.tar.gz
@@ -44,7 +44,13 @@ install -m 644 -p qml/sqlite_backend.js %{buildroot}%{_datadir}/%{name}/qml
 install -d %{buildroot}%{_datadir}/%{name}
 install -m 644 -p about-score-board.png %{buildroot}%{_datadir}/%{name}
 install -d %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/
-install -m 644 -p harbour-score-board.png %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/
+install -m 644 -p harbour-score-board-86.png %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/harbour-score-board.png
+install -d %{buildroot}%{_datadir}/icons/hicolor/108x108/apps/
+install -m 644 -p harbour-score-board-108.png %{buildroot}%{_datadir}/icons/hicolor/108x108/apps/harbour-score-board.png
+install -d %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/
+install -m 644 -p harbour-score-board-128.png %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/harbour-score-board.png
+install -d %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/
+install -m 644 -p harbour-score-board-256.png %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/harbour-score-board.png
 install -d %{buildroot}%{_datadir}/applications
 install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applications
 
@@ -55,5 +61,10 @@ install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applicatio
 %{_datadir}/%{name}
 
 %changelog
+* Sun Oct 03 2016 - Damien Caliste <dcaliste@free.fr> 1.1.0-1
+- Add multi resolution icons.
+- Add favorite names as context menu when editing board.
+- Allow to tap on board header to go to the editing page.
+
 * Fri Aug 28 2015 - Damien Caliste <dcaliste@free.fr> 1.0.0-1
 - initial release with basic functionalities.

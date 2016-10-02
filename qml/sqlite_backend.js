@@ -96,7 +96,7 @@ function getPlayerList(db) {
     });
     return allPlayers;
 }
-function newBoard(db, teamModel, scoreModel) {
+function newBoard(db) {
     var id
     db.transaction(function(tx) {
         createTableHistory(tx);

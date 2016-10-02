@@ -28,15 +28,20 @@ ListModel {
         label: ""
         score: 0
     }
+    signal updated()
     function setNTeams(n) {
+        if (n == this.count) return
         if (n < this.count) this.remove(n, this.count - n)
         var i
         for (i = this.count; i < n; i++) {
             this.append({'label': "", 'score': 0})
         }
+        this.updated()
     }
     function setTeamLabel(col, label) {
+        if (label == this.get(col)['label']) return
         this.get(col)['label'] = label
+        this.updated()
     }
     function setSummary(col, value) {
         this.get(col)['score'] = value

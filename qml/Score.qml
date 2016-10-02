@@ -27,18 +27,9 @@ Page {
         Storage.getBoardTeams(storage, teamModel, boardId)
         Storage.getBoardScores(storage, scoreModel, boardId)
     }
-    property var historyEntry
-    Component.onDestruction: if (scoreModel.count > 1) {
-        var id = (boardId == 0)
-        ? Storage.newBoard(storage, teamModel, scoreModel)
-        : Storage.updateBoard(storage, teamModel, scoreModel, boardId)
-        Storage.setBoardTeams(storage, teamModel, id)
-        Storage.setBoardScores(storage, scoreModel, id)
-        Storage.setBoardHistory(storage, historyEntry, id)
-    } else {
-        if (boardId > 0) Storage.deleteBoard(storage, boardId)
-        history.remove(historyEntry.index)
-    }
+
+    signal commited()
+
     property alias teamModel: teamModel
     property alias scoreModel: scoreModel
 
@@ -60,6 +51,18 @@ Page {
     ScoreModel {
         id: scoreModel
         nCols: teamModel.count
+    }
+    onStatusChanged: if (boardId > 0 && status == PageStatus.Inactive) {
+        Storage.setBoardTeams(storage, teamModel, boardId)
+        Storage.setBoardScores(storage, scoreModel, boardId)
+        commited()
+    }
+    Connections {
+        target: Qt.application
+        onAboutToQuit: if (boardId > 0) {
+            Storage.setBoardTeams(storage, teamModel, boardId)
+            Storage.setBoardScores(storage, scoreModel, boardId)
+        }
     }
 
     SilicaListView {

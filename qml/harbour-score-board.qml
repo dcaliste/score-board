@@ -30,8 +30,14 @@ ApplicationWindow {
 
     property var scoreBoard: undefined
     function newScoreBoard() {
-        history.insert(0, {})
-        scoreBoard = pageStack.push("Score.qml", {'historyEntry': history.get(0)})
+        var id = Storage.newBoard(storage)
+        scoreBoard = pageStack.push("Score.qml", {'boardId': id})
+        scoreBoard.commited.connect(function() {
+            if (history.get(0)["rowid"] != id) {
+                history.insert(0, {})
+            }
+            Storage.setBoardHistory(storage, history.get(0), id)
+        })
     }
 
     ListModel {
@@ -72,6 +78,7 @@ ApplicationWindow {
             }
             delegate: ListItem {
                 id: row
+                property int historyIndex: model.index !== undefined ? model.index : 0
                 property int rowid: model.rowid !== undefined ? model.rowid : 0
                 contentHeight: Theme.itemSizeMedium
                 Label {
@@ -100,14 +107,18 @@ ApplicationWindow {
                     font.pixelSize: Theme.fontSizeExtraSmall;
                     color: row.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                 }
-                onClicked: scoreBoard = pageStack.push("Score.qml",
-                                                      {'boardId': model.rowid,
-                                                       'historyEntry': history.get(model.index)})
+                onClicked: {
+                    scoreBoard = pageStack.push("Score.qml",
+                                                {'boardId': model.rowid})
+                    scoreBoard.commited.connect(function() {
+                        Storage.setBoardHistory(storage, history.get(model.index), model.rowid)
+                    })
+                }
                 function deleteBoard() {
                     remorseAction("Deleting board",
                                   function() {
-                                      history.remove(model['index'])
                                       Storage.deleteBoard(storage, rowid)
+                                      history.remove(historyIndex)
                                   });
                 }
                 menu: Component {

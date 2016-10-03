@@ -52,7 +52,7 @@ Page {
 	    horizontalAlignment: Text.AlignHCenter
             width: parent.width
             font.pixelSize: Theme.fontSizeExtraSmall
-            text: "Version 1.0\nCopyright © 2015 Damien Caliste\nemail : dcaliste@free.fr"
+            text: "Version 1.1\nCopyright © 2015-2016 Damien Caliste\nemail : dcaliste@free.fr"
             color: Theme.secondaryColor
         }
         Label {
@@ -66,11 +66,12 @@ Page {
             color: Theme.secondaryColor
         }
     }
-    Label {
+    Button {
         anchors.bottom: parent.bottom
+        anchors.bottomMargin: Theme.paddingSmall
         anchors.horizontalCenter: parent.horizontalCenter
-        font.pixelSize: Theme.fontSizeExtraSmall
-        text: "https://github.com/dcaliste/score-board"
+        text: "Score board sources"
         color: Theme.secondaryColor
+        onClicked: Qt.openUrlExternally("https://github.com/dcaliste/score-board")
     }
 }

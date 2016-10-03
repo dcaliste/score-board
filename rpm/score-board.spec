@@ -40,6 +40,7 @@ install -m 644 -p qml/ScoreModel.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/TeamModel.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/Score.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/BoardSetup.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/FavTeam.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/sqlite_backend.js %{buildroot}%{_datadir}/%{name}/qml
 install -d %{buildroot}%{_datadir}/%{name}
 install -m 644 -p about-score-board.png %{buildroot}%{_datadir}/%{name}
@@ -65,6 +66,7 @@ install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applicatio
 - Add multi resolution icons.
 - Add favorite names as context menu when editing board.
 - Allow to tap on board header to go to the editing page.
+- Add a favorite board setup page to define default board setup.
 
 * Fri Aug 28 2015 - Damien Caliste <dcaliste@free.fr> 1.0.0-1
 - initial release with basic functionalities.

@@ -1,8 +1,8 @@
 /*
  * Score.qml
- * Copyright (C) Damien Caliste 2015 <dcaliste@free.fr>
+ * Copyright (C) Damien Caliste 2015-2016 <dcaliste@free.fr>
  *
- * freebox-o-fish is free software: you can redistribute it and/or modify it
+ * score-board is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 3.
  *
@@ -126,12 +126,16 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: scores.decorationFunc === undefined ? "Highlight highest" : "No highlight"
-                onClicked: scores.decorationFunc = scores.decorationFunc === undefined ? scores.highlightHighest : scores.undefined
+                text: scores.decorationFunc === undefined
+                      ? "Highlight highest" : "No highlight"
+                onClicked: scores.decorationFunc = scores.decorationFunc === undefined
+                           ? scores.highlightHighest : scores.undefined
             }
             MenuItem {
-                text: scores.summarizeFunc === undefined ? "Sum up scores" : "No summarize"
-                onClicked: scores.summarizeFunc = scores.summarizeFunc === undefined ? scores.sumUp : scores.undefined
+                text: scores.summarizeFunc === undefined
+                      ? "Sum up scores" : "No summarize"
+                onClicked: scores.summarizeFunc = scores.summarizeFunc === undefined
+                           ? scores.sumUp : scores.undefined
             }
             MenuItem {
                 text: "Modify the setup"

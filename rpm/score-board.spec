@@ -62,7 +62,7 @@ install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applicatio
 %{_datadir}/%{name}
 
 %changelog
-* Sun Oct 03 2016 - Damien Caliste <dcaliste@free.fr> 1.1.0-1
+* Mon Oct 03 2016 - Damien Caliste <dcaliste@free.fr> 1.1.0-1
 - Add multi resolution icons.
 - Add favorite names as context menu when editing board.
 - Allow to tap on board header to go to the editing page.

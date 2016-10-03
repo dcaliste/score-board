@@ -1,5 +1,5 @@
 /*
- * Score.qml
+ * BoardSetup.qml
  * Copyright (C) Damien Caliste 2015 <dcaliste@free.fr>
  *
  * freebox-o-fish is free software: you can redistribute it and/or modify it
@@ -68,7 +68,7 @@ Page {
                     property alias text: textField.text
                     height: Theme.itemSizeMedium + (favorites.parent == player ? favorites.height : 0.)
                     width: Theme.itemSizeHuge * 2
-                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.horizontalCenter: column.horizontalCenter
                     onActiveFocusChanged: if (activeFocus) {
                         page.index = model.index
                         textField.forceActiveFocus()
@@ -82,10 +82,8 @@ Page {
                         onActiveFocusChanged: if (activeFocus) {
                             page.index = model.index
                         }
-                        Component.onCompleted: {
-                            text = model.label
-                            if (page.index == model.index) forceActiveFocus()
-                        }
+                        text: model.label
+                        focus: page.index == model.index
                         EnterKey.iconSource: "image://theme/icon-m-enter-close"
                         EnterKey.onClicked: focus = false
                     }

@@ -126,6 +126,14 @@ function getBoardTeams(db, model, boardId) {
             model.setNTeams(rs.rows.length);
             for (var i = 0; i < rs.rows.length; i++)
                 model.setTeamLabel(i, rs.rows.item(i).label);
+        } else {
+            var rs = tx.executeSql('SELECT label FROM Teams WHERE board = -1');
+            if (rs.rows.length > 0) {
+                model.clear();
+                model.setNTeams(rs.rows.length);
+                for (var i = 0; i < rs.rows.length; i++)
+                    model.setTeamLabel(i, rs.rows.item(i).label);
+            }
         }
     });
 }

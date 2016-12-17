@@ -25,6 +25,7 @@ ListItem {
     property alias colHeight: row.contentHeight
     property real fontSize: Theme.fontSizeMedium
     property var values
+    property bool addButton
     property int index: -1
     property var color
     property bool editing: false
@@ -42,7 +43,7 @@ ListItem {
 
     Row {
         anchors.verticalCenter: parent.verticalCenter
-        opacity: (row.values.get(0)['value'] !== undefined && !row.editing) ? 1. : 0.
+        opacity: (!row.addButton && !row.editing) ? 1. : 0.
         visible: opacity > 0.
         Repeater {
             model: row.values
@@ -74,7 +75,7 @@ ListItem {
     }
     Image {
         anchors.top: parent.top
-        opacity: (row.values.get(0)['value'] === undefined && !row.editing) ? 1. : 0.
+        opacity: (row.addButton && !row.editing) ? 1. : 0.
         visible: opacity > 0.
         anchors.horizontalCenter: parent.horizontalCenter
         source: "image://theme/icon-m-add"

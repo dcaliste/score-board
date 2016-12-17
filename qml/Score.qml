@@ -129,13 +129,13 @@ Page {
                 text: scores.decorationFunc === undefined
                       ? "Highlight highest" : "No highlight"
                 onClicked: scores.decorationFunc = scores.decorationFunc === undefined
-                           ? scores.highlightHighest : scores.undefined
+                           ? scores.highlightHighest : undefined
             }
             MenuItem {
                 text: scores.summarizeFunc === undefined
                       ? "Sum up scores" : "No summarize"
                 onClicked: scores.summarizeFunc = scores.summarizeFunc === undefined
-                           ? scores.sumUp : scores.undefined
+                           ? scores.sumUp : undefined
             }
             MenuItem {
                 text: "Modify the setup"
@@ -205,6 +205,7 @@ Page {
             values: model.values
             index: model.index
             color: model.color
+            addButton: model.last
             editing: (scores.edition !== undefined &&
                       scores.edition.model === row.values)
 
@@ -228,7 +229,7 @@ Page {
                                                      {"model": values,
                                                       "scoreModel": scoreModel,
                                                       "colWidth": page._colWidth,
-                                                      "newRow": row.values.get(0)['value'] === undefined})
+                                                      "newRow": row.addButton})
                 scores.edition.closed.connect(scores.stopEdition)
             }
         }

@@ -40,8 +40,8 @@ ListModel {
     }
     signal updated()
     function ensureLastRow() {
-        if (this.count > 0 && this.get(this.count - 1)['values'].get(0)['value'] === undefined) return
-        scoreModel.append({'values': [{'value': undefined, 'highlighted': false}]})
+        if (this.count > 0 && this.get(this.count - 1)['last']) return
+        this.append({'last': true, 'values': []})
     }
     function removeAt(row) {
         this.remove(row['index'])
@@ -57,10 +57,10 @@ ListModel {
         var scores = []
         var i
         for (i = 0; i < nCols; i++) {
-            scores[i] = {'value': 0}
+            scores[i] = {'value': 0, 'highlighted': false}
         }
         ensureLastRow()
-        this.insert(this.count - 1, {'values': scores})
+        this.insert(this.count - 1, {'values': scores, 'last': false})
         return this.get(this.count - 2)['values']
     }
     function update(row, col, value, signal) {

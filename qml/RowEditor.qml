@@ -33,29 +33,33 @@ Item {
     Component.onCompleted: opacity = 1.
     Behavior on opacity { FadeAnimation {} }
 
+    function commit () {
+        if (line.newRow) line.model = scoreModel.addRow()
+        for (var col = 0; col < scoreModel.nCols; col++)
+            scoreModel.update(line.model, col, cols.itemAt(col).text)
+        closed()
+    }
+
     width: row.width
     height: row.height
     Row {
         id: row
         Repeater {
+            id: cols
             model: newRow ? scoreModel.nCols : line.model
             TextField {
                 width: colWidth
                 text: model.value ? model.value : ""
                 inputMethodHints: Qt.ImhDigitsOnly
                 Component.onCompleted: if (model.index == colIndex) forceActiveFocus()
-                Component.onDestruction: scoreModel.update(line.model, model.index, text)
                 EnterKey.iconSource: "image://theme/icon-m-enter-close"
-                EnterKey.onClicked: line.closed()
-            }
-            Component.onDestruction: if (line.newRow) {
-                line.model = scoreModel.addRow()
+                EnterKey.onClicked: line.commit()
             }
         }
     }
     InverseMouseArea {
         anchors.fill: parent
         stealPress: true
-        onPressedOutside: closed()
+        onPressedOutside: commit()
     }
 }

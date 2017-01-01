@@ -9,7 +9,7 @@
 Name: harbour-score-board
 
 Summary: A Sailfish application to store scores from games (or not)
-Version: 1.1.0
+Version: 1.2.0
 Release: 1
 License: GPLv3
 Source: %{name}-%{version}.tar.gz
@@ -32,16 +32,18 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf %{buildroot}
 install -d %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/About.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/BoardPage.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/BoardSetup.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/FavoritePage.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/FavTeamPage.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/harbour-score-board.qml %{buildroot}%{_datadir}/%{name}/qml
-install -m 644 -p qml/RowHeader.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/RowEditor.qml %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/RowHeader.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/RowItem.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/ScoreModel.qml %{buildroot}%{_datadir}/%{name}/qml
-install -m 644 -p qml/TeamModel.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/Score.qml %{buildroot}%{_datadir}/%{name}/qml
-install -m 644 -p qml/BoardSetup.qml %{buildroot}%{_datadir}/%{name}/qml
-install -m 644 -p qml/FavTeam.qml %{buildroot}%{_datadir}/%{name}/qml
 install -m 644 -p qml/sqlite_backend.js %{buildroot}%{_datadir}/%{name}/qml
+install -m 644 -p qml/TeamModel.qml %{buildroot}%{_datadir}/%{name}/qml
 install -d %{buildroot}%{_datadir}/%{name}
 install -m 644 -p about-score-board.png %{buildroot}%{_datadir}/%{name}
 install -d %{buildroot}%{_datadir}/icons/hicolor/86x86/apps/
@@ -62,6 +64,11 @@ install -m 644 -p harbour-score-board.desktop %{buildroot}%{_datadir}/applicatio
 %{_datadir}/%{name}
 
 %changelog
+* Sat Dec 17 2016 - Damien Caliste <dcaliste@free.fr> 1.2.0-1
+- Update sqlite javascript for Qt5.6.
+- Correct last row detection in score model in Qt5.6.
+- Add a label for each score.
+
 * Mon Oct 03 2016 - Damien Caliste <dcaliste@free.fr> 1.1.0-1
 - Add multi resolution icons.
 - Add favorite names as context menu when editing board.

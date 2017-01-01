@@ -5,11 +5,11 @@ A Sailfish application to store scores from games (or not).
 
 It automatically saves previous boards, and they can be modified
 later. It allows to create boards up to ten players or teams and
-can display the summation of all scores.
+can display the summation of all scores. Scores can be sorted by
+date or category.
 
 Roadmap
 -------
-* add categories (user editable) to sort boards.
 * add templates for games with a specific number of rows (like
   Seven Wonders for instance) and colourise rows.
 * add a search functionality in the board history
@@ -17,7 +17,7 @@ Roadmap
 
 License
 -------
-Copyright (C) Damien Caliste 2015 <dcaliste@free.fr>
+Copyright (C) Damien Caliste 2015-2017 <dcaliste@free.fr>
 
 score-board is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License

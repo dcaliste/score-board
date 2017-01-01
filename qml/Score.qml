@@ -24,6 +24,7 @@ Page {
 
     property int boardId: 0
     onBoardIdChanged: if (boardId > 0) {
+        _category = Storage.getBoardCategory(storage, boardId)
         Storage.getBoardTeams(storage, teamModel, boardId)
         Storage.getBoardScores(storage, scoreModel, boardId)
     }
@@ -36,6 +37,7 @@ Page {
     property real columnMinWidth: 0
     property real columnMaxWidth: Theme.itemSizeHuge
 
+    property string _category
     property var _setup: undefined
     property int _nTeams: teamModel.count
     property real _colWidth
@@ -45,6 +47,16 @@ Page {
         value: Math.min(Math.max(scores.width / _nTeams, columnMinWidth), columnMaxWidth)
     }
 
+    Binding {
+        when: _setup !== undefined
+        target: page
+        property: "_category"
+        value: _setup !== undefined ? _setup.category : ""
+    }
+    on_SetupChanged: {
+        if (!_setup || _setup === undefined) return
+        _setup.category = _category
+    }
     TeamModel {
         id: teamModel
     }
@@ -52,17 +64,19 @@ Page {
         id: scoreModel
         nCols: teamModel.count
     }
-    onStatusChanged: if (boardId > 0 && status == PageStatus.Inactive) {
+
+    function store() {
         Storage.setBoardTeams(storage, teamModel, boardId)
         Storage.setBoardScores(storage, scoreModel, boardId)
+        Storage.updateBoard(storage, boardId, Storage.getCategoryId(storage, _category))
+    }
+    onStatusChanged: if (boardId > 0 && status == PageStatus.Inactive) {
+        store()
         commited()
     }
     Connections {
         target: Qt.application
-        onAboutToQuit: if (boardId > 0) {
-            Storage.setBoardTeams(storage, teamModel, boardId)
-            Storage.setBoardScores(storage, scoreModel, boardId)
-        }
+        onAboutToQuit: if (boardId > 0) store()
     }
 
     SilicaListView {
@@ -141,7 +155,7 @@ Page {
                 text: "Modify the setup"
                 onClicked: {
                     if (_setup === undefined) {
-                        _setup = pageStack.pushAttached("BoardSetup.qml",
+                        _setup = pageStack.pushAttached("BoardPage.qml",
                                                         {'model': teamModel})
                     }
                     pageStack.navigateForward()
@@ -157,14 +171,14 @@ Page {
             width: page.width
             PageHeader {
                 width: parent.width
-                title: "Score"
+                title: "Score" + (_category.length > 0 ? (" - " + _category) : "")
             }
             RowHeader {
                 colWidth: page._colWidth
                 model: teamModel
                 onClicked: {
                     if (_setup === undefined) {
-                        _setup = pageStack.pushAttached("BoardSetup.qml",
+                        _setup = pageStack.pushAttached("BoardPage.qml",
                                                         {'model': teamModel,
                                                          'index': index})
                     } else {
@@ -189,11 +203,6 @@ Page {
             onUpdated: scores.update()
         }
 
-        property var edition: undefined
-        function stopEdition() {
-            if (edition) { edition.destroy() }
-            edition = undefined
-        }
         Component {
             id: editor
             RowEditor { }
@@ -206,8 +215,6 @@ Page {
             index: model.index
             color: model.color
             addButton: model.last
-            editing: (scores.edition !== undefined &&
-                      scores.edition.model === row.values)
 
             function deleteRow() {
                 if (index > model.count - 2) return
@@ -224,13 +231,16 @@ Page {
             }
 
             onClicked: {
-                scores.stopEdition()
-                scores.edition = editor.createObject(row,
-                                                     {"model": values,
-                                                      "scoreModel": scoreModel,
-                                                      "colWidth": page._colWidth,
-                                                      "newRow": row.addButton})
-                scores.edition.closed.connect(scores.stopEdition)
+                row.editing = true
+                var edition = editor.createObject(row,
+                                                  {"model": values,
+                                                   "scoreModel": scoreModel,
+                                                   "colWidth": page._colWidth,
+                                                   "newRow": row.addButton})
+                edition.closed.connect(function () {
+                    edition.destroy()
+                    row.editing = false
+                })
             }
         }
         VerticalScrollDecorator { flickable: scores }

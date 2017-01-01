@@ -19,98 +19,103 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "sqlite_backend.js" as Storage
 
-Page {
-    id: page
+Item {
+    id: root
 
-    property var model
+    property alias model: players.model
     property int index
-    signal accepted()
 
     onIndexChanged: if (players.itemAt(index)) {
         players.itemAt(index).forceActiveFocus()
     }
 
-    SilicaFlickable {
-        id: flickable
-        anchors.fill: parent
-        contentHeight: column.height
-        Column {
-            id: column
-            width: page.width
-            PageHeader {
-                title: "Board setup"
-            }
-            Slider {
-                id: nTeams
-                width: parent.width
-                minimumValue: 1
-                maximumValue: 10
-                stepSize: 1
-                valueText: value
-                label: "Number of players or teams of players"
-                onValueChanged: model.setNTeams(value)
-                Component.onCompleted: value = model.count
-            }
-            Item {
-                width: parent.width
-                height: Theme.itemSizeMedium
-                Label {
-                    anchors.centerIn: parent
-                    text: "Label for each player / team"
-                    color: Theme.highlightColor
-                }
-            }
-            Repeater {
-                id: players
-                model: page.model
-                Item {
-                    id: player
-                    property alias text: textField.text
-                    height: Theme.itemSizeMedium + (favorites.parent == player ? favorites.height : 0.)
-                    width: Theme.itemSizeHuge * 2
-                    anchors.horizontalCenter: column.horizontalCenter
-                    onActiveFocusChanged: if (activeFocus) {
-                        page.index = model.index
-                        textField.forceActiveFocus()
-                    }
-                    TextField {
-                        id: textField
-                        width: parent.width
-                        placeholderText: "Player " + (model.index + 1)
-                        label: placeholderText
-                        onTextChanged: page.model.setTeamLabel(model.index, text)
-                        onActiveFocusChanged: if (activeFocus) {
-                            page.index = model.index
-                        }
-                        text: model.label
-                        focus: page.index == model.index
-                        EnterKey.iconSource: "image://theme/icon-m-enter-close"
-                        EnterKey.onClicked: focus = false
-                    }
-                    IconButton {
-                        id: favIcon
-                        anchors.left: parent.right
-                        icon.source: "image://theme/icon-m-favorite"
-                        onClicked: favorites.show(player)
-                        visible: favorites.count > 0
-                                 && (textField.focus || favorites.parent == player)
-                    }
-                }
-            }
-        }
-        VerticalScrollDecorator { flickable: flickable }
+    height: content.height
+
+    ListModel {
+        id: favorites
+        Component.onCompleted: Storage.getPlayerList(storage, this)
     }
 
-    ContextMenu {
-        id: favorites
-        property int count: favRepeater.model !== undefined ? favRepeater.model.length : 0
+    Column {
+        id: content
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.horizontalPageMargin
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.horizontalPageMargin
+        Slider {
+            id: nTeams
+            width: parent.width
+            minimumValue: 1
+            maximumValue: 10
+            stepSize: 1
+            valueText: value
+            label: "Number of players or teams of players"
+            value: model.count
+            onValueChanged: model.setNTeams(value)
+            Connections {
+                target: model
+                onCountChanged: nTeams.value = model.count
+            }
+        }
+        Item {
+            width: parent.width
+            height: Theme.itemSizeMedium
+            Label {
+                anchors.centerIn: parent
+                text: "Label for each player / team"
+                color: Theme.highlightColor
+            }
+        }
         Repeater {
-            id: favRepeater
-            model: Storage.getPlayerList(storage)
-
-            MenuItem {
-                text: modelData
-                onClicked: players.itemAt(page.index).text = text
+            id: players
+            Item {
+                id: player
+                property alias text: textField.text
+                height: Theme.itemSizeMedium
+                width: Theme.itemSizeHuge * 2
+                anchors.horizontalCenter: content.horizontalCenter
+                onActiveFocusChanged: if (activeFocus) {
+                    root.index = model.index
+                    textField.forceActiveFocus()
+                }
+                TextField {
+                    id: textField
+                    width: parent.width
+                    placeholderText: "Player " + (model.index + 1)
+                    label: placeholderText
+                    onTextChanged: players.model.setTeamLabel(model.index, text)
+                    onActiveFocusChanged: if (activeFocus) {
+                        root.index = model.index
+                    }
+                    text: model.label
+                    focus: root.index == model.index
+                    EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                    EnterKey.onClicked: if (root.index + 1 < root.model.count) {
+                        root.index += 1
+                    } else {
+                        focus = false
+                    }
+                }
+                IconButton {
+                    id: favIcon
+                    anchors.left: parent.right
+                    icon.source: "image://theme/icon-m-favorite"
+                    onClicked: {
+                        var sel = pageStack.push("FavoritePage.qml", {
+                            title: "Player " + (model.index + 1)
+                            , model: favorites})
+                        sel.select.connect(function(value) {
+                            players.itemAt(root.index).text = value
+                            if (root.index + 1 < root.model.count) {
+                                root.index += 1
+                            } else {
+                                textField.focus = false
+                            }
+                            pageStack.pop()
+                        })
+                    }
+                    visible: favorites.count > 0 && textField.focus
+                }
             }
         }
     }

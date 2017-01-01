@@ -19,8 +19,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "sqlite_backend.js" as Storage
 
-BoardSetup {
-    model: teamModel
+Page {
+    id: page
 
     property int _boardId: -1
 
@@ -33,5 +33,26 @@ BoardSetup {
     Connections {
         target: Qt.application
         onAboutToQuit: Storage.setBoardTeams(storage, teamModel, _boardId)
+    }
+
+    SilicaFlickable {
+        id: flickable
+        anchors.fill: parent
+
+        contentHeight: column.height
+
+        Column {
+            id: column
+            width: page.width
+
+            PageHeader {
+                title: "Favorite board setup"
+            }
+            BoardSetup {
+                model: teamModel
+                width: parent.width
+            }
+        }
+        VerticalScrollDecorator { flickable: flickable }
     }
 }

@@ -96,18 +96,25 @@ function setBoardHistory(db, historyEntry, boardId) {
         }
     });
 }
-function getPlayerList(db) {
-    var allPlayers = [];
-
+function getCategoryList(db, model) {
+    db.transaction(function(tx) {
+        createTableCategories(tx);
+        var rs = tx.executeSql("SELECT DISTINCT trim(category) label FROM Categories"
+                               + " WHERE label IS NOT \"\" ORDER BY label ASC");
+        if (rs.rows.length > 0)
+            for (var i = 0; i < rs.rows.length; i++)
+                model.append({"label": rs.rows.item(i).label});
+    });
+}
+function getPlayerList(db, model) {
     db.transaction(function(tx) {
         createTableTeams(tx);
         var rs = tx.executeSql("SELECT DISTINCT trim(label) player FROM Teams"
                                + " WHERE label IS NOT \"\" ORDER BY label ASC");
         if (rs.rows.length > 0)
             for (var i = 0; i < rs.rows.length; i++)
-                allPlayers.push(rs.rows.item(i).player);
+                model.append({"label": rs.rows.item(i).player});
     });
-    return allPlayers;
 }
 function newBoard(db) {
     var id
@@ -121,14 +128,46 @@ function newBoard(db) {
     });
     return id;
 }
-function updateBoard(db, teamModel, scoreModel, boardId) {
+function updateBoard(db, boardId, catId) {
     db.transaction(function(tx) {
         createTableHistory(tx);
-        var row = [0,
+        var row = [(catId !== undefined) ? catId : 0,
                    boardId]
         var res = tx.executeSql("UPDATE History SET category = ? WHERE ROWID = ?", row);
     });
     return boardId;
+}
+function getCategoryId(db, category) {
+    if (!category || category === undefined || category.length == 0)
+        return 0;
+
+    var catId;
+    db.transaction(function(tx) {
+        createTableCategories(tx);
+        var rs = tx.executeSql("SELECT ROWID FROM Categories WHERE category = ?", [category]);
+        if (rs.rows.length > 0) {
+            catId = rs.rows.item(0).rowid;
+        } else {
+            rs = tx.executeSql("INSERT INTO Categories(category) VALUES (?)", [category]);
+            catId = rs.insertId;
+        }
+    });
+    return catId;
+}
+function getBoardCategory(db, boardId) {
+    var category = "";
+    db.transaction(function(tx) {
+        createTableCategories(tx);
+        var rs = tx.executeSql("SELECT Categories.category FROM History"
+                               + " LEFT JOIN Categories"
+                               + " ON History.category = Categories.ROWID"
+                               + " WHERE History.ROWID = ?", [boardId]);
+        if (rs.rows.length > 0) {
+            category = rs.rows.item(0).category;
+            if (!category || category === undefined) category = "";
+        }
+    });
+    return category;
 }
 function getBoardTeams(db, model, boardId) {
     db.transaction(function(tx) {

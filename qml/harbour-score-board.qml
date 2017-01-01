@@ -57,7 +57,7 @@ ApplicationWindow {
                 }
                 MenuItem {
                     text: "Favorite board setup"
-                    onClicked: pageStack.push("FavTeam.qml")
+                    onClicked: pageStack.push("FavTeamPage.qml")
                 }
                 MenuItem {
                     text: "Start a new board"
@@ -99,7 +99,9 @@ ApplicationWindow {
                     anchors.left: parent.left
                     anchors.leftMargin: Theme.horizontalPageMargin
                     anchors.top: parent.verticalCenter
-                    text: model.nScores + " scores"
+                    text: model.category && model.category != ""
+                          ? model.category + " (" + model.nScores + " scores)"
+                          : model.nScores + " scores"
                     font.pixelSize: Theme.fontSizeExtraSmall
                     color: row.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                 }

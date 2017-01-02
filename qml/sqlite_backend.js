@@ -15,6 +15,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+var Ordering = Object({'Date':0, 'Category': 1})
+
 function getDB() {
     var db = LocalStorage.openDatabaseSync("score", "0.1",
                                            "Local storage for scores", 10000);
@@ -52,6 +54,15 @@ function createTableScores(tx) {
 /* Get and set operations. */
 function getBoardHistory(db, history, ordering) {
     history.clear();
+    var ord
+    if (ordering === undefined
+        || ordering == Ordering.Default
+        || ordering == Ordering.Date) {
+        ordering = Ordering.Date
+        ord = "datetime"
+    } else if (ordering == Ordering.Category) {
+        ord = "History.category = 0, Categories.category, datetime"
+    }
     /* Must be synchronous here. */
     db.transaction(function(tx) {
         createTableCategories(tx);
@@ -64,12 +75,16 @@ function getBoardHistory(db, history, ordering) {
                                + "Categories.category FROM History"
                                + " LEFT JOIN Categories"
                                + " ON History.category = Categories.ROWID"
-                               + " ORDER BY datetime DESC");
+                               + " ORDER BY " + ord + " DESC");
         if (rs.rows.length > 0)
             for (var i = 0; i < rs.rows.length; i++) {
                 var cpy = Object(rs.rows.item(i));
-                var dateTime = new Date(cpy["datetime"] * 1000);
-                cpy.section = Format.formatDate(dateTime, Formatter.TimepointSectionRelative);
+                if (ordering == Ordering.Date) {
+                    var dateTime = new Date(cpy["datetime"] * 1000);
+                    cpy.section = Format.formatDate(dateTime, Formatter.TimepointSectionRelative);
+                } else {
+                    cpy.section = cpy.category ? cpy.category : "Uncategorized"
+                }
                 history.append(cpy);
             }
     });

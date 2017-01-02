@@ -1,6 +1,6 @@
 /*
  * harbour-score-board.qml
- * Copyright (C) Damien Caliste 2015-2016 <dcaliste@free.fr>
+ * Copyright (C) Damien Caliste 2015-2017 <dcaliste@free.fr>
  *
  * score-board is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License
@@ -19,6 +19,7 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import QtQuick.LocalStorage 2.0
 import "sqlite_backend.js" as Storage
+import org.nemomobile.configuration 1.0
 
 ApplicationWindow {
     id: app
@@ -42,7 +43,16 @@ ApplicationWindow {
 
     ListModel {
         id: history
-        Component.onCompleted: Storage.getBoardHistory(storage, this)
+        Component.onCompleted: Storage.getBoardHistory(storage, this, ordering.id)
+    }
+    Connections {
+        target: ordering
+        onValueChanged: Storage.getBoardHistory(storage, history, ordering.id)
+    }
+    ListModel {
+        id: sortModel
+        ListElement { label: "date" }
+        ListElement { label: "category" }
     }
 
     Page {
@@ -54,6 +64,17 @@ ApplicationWindow {
                 MenuItem {
                     text: "About"
                     onClicked: pageStack.push("About.qml")
+                }
+                MenuItem {
+                    text: "Sort by: " + ordering.value
+                    onClicked: {
+                        var sel = pageStack.push("FavoritePage.qml",
+                                                 {title: "Sort by", model: sortModel})
+                        sel.select.connect(function(value) {
+                            ordering.value = value
+                            pageStack.pop()
+                        })
+                    }
                 }
                 MenuItem {
                     text: "Favorite board setup"
@@ -272,5 +293,14 @@ ApplicationWindow {
             }
         }
 
+    }
+
+    ConfigurationValue {
+        id: ordering
+        property var sortKeys: {"date": Storage.Ordering.Date,
+                                "category": Storage.Ordering.Category}
+        property int id: sortKeys[value]
+        key: "/apps/harbour-score-board/settings/historyOrdering"
+        defaultValue: "date"
     }
 }

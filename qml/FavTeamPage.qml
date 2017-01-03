@@ -29,7 +29,9 @@ Page {
         Component.onCompleted: Storage.getBoardTeams(storage, teamModel, _boardId)
     }
 
-    onStatusChanged: Storage.setBoardTeams(storage, teamModel, _boardId)
+    onStatusChanged: if (status == PageStatus.Inactive) {
+        Storage.setBoardTeams(storage, teamModel, _boardId)
+    }
     Connections {
         target: Qt.application
         onAboutToQuit: Storage.setBoardTeams(storage, teamModel, _boardId)

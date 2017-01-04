@@ -34,8 +34,9 @@ ApplicationWindow {
         var id = Storage.newBoard(storage)
         scoreBoard = pageStack.push("Score.qml", {'boardId': id})
         scoreBoard.commited.connect(function() {
-            if (history.get(0)["rowid"] != id) {
-                history.insert(0, {})
+            if (history.count == 0 || history.get(0)["rowid"] != id) {
+                history.insert(0, {"rowid": id, "datetime": 0, "teams": "",
+                                   "nScores": 0, "category": ""})
             }
             Storage.setBoardHistory(storage, history.get(0), id)
         })
